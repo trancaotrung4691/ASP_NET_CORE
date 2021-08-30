@@ -32,7 +32,7 @@ namespace eShopSolution.BackendApi.Controllers
             return Ok(loginToken);
         }
 
-        [HttpPost("register")]
+        [HttpPost()]
         [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] RegisterRequest registerRequest)
         {
@@ -46,6 +46,14 @@ namespace eShopSolution.BackendApi.Controllers
                 return BadRequest("Register is unsuccessful");
             }
             return Ok();
+        }
+
+        [HttpGet("paging")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetAllPaging([FromQuery] GetUserPagingRequest request)
+        {
+            var users = await _userService.GetUserPaging(request);
+            return Ok(users);
         }
     }
 }

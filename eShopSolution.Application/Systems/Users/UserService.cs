@@ -102,7 +102,7 @@ namespace eShopSolution.Application.Systems.Users
                 .Select(x => new UserViewModel()
                 {
                     Email = x.Email,
-                    PhoneNuber = x.PhoneNumber,
+                    PhoneNumber = x.PhoneNumber,
                     FirstName = x.FirstName,
                     LastName = x.LastName,
                     UserName = x.UserName,

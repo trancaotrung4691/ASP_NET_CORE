@@ -1,4 +1,5 @@
 using eShopSolution.AdminApp.Services;
+using eShopSolution.Utilities.Constants;
 using eShopSolution.ViewModels.Systems.Users;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -34,7 +35,12 @@ namespace eShopSolution.AdminApp
 
             services.AddControllersWithViews()
                     .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<LoginRequestValidator>());
-            
+
+            services.AddSession(option =>
+            {
+                option.IdleTimeout = TimeSpan.FromMinutes(SystemConstants.SESSION_TIME_OUT);
+            });
+
 
             services.AddTransient<IUserApiClient, UserApiClient>();
 
@@ -69,7 +75,7 @@ namespace eShopSolution.AdminApp
             app.UseRouting();
 
             app.UseAuthorization();
-
+            app.UseSession();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
