@@ -30,7 +30,7 @@ namespace eShopSolution.BackendApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<EShopDBContext>(option =>
-                option.UseSqlServer(Configuration.GetConnectionString(SystemConstants.MainConnectionString)));
+                option.UseSqlServer(Configuration.GetConnectionString(SystemConstants.CONNECTION_STRING_KEY)));
 
             services.AddIdentity<AppUser, AppRole>()
                     .AddEntityFrameworkStores<EShopDBContext>()
@@ -38,9 +38,8 @@ namespace eShopSolution.BackendApi
 
             
             //Declare DI
-            services.AddTransient<IPublicProductService, PublicProductService>();
             services.AddTransient<IStorageService, FileStorageService>();
-            services.AddTransient<IManageProductService, ManageProductService>();
+            services.AddTransient<IProductService, ProductService>();
             services.AddTransient<UserManager<AppUser>, UserManager<AppUser>>();
             services.AddTransient<SignInManager<AppUser>, SignInManager<AppUser>>();
             services.AddTransient<RoleManager<AppRole>, RoleManager<AppRole>>();
