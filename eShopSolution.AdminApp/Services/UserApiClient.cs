@@ -1,5 +1,6 @@
 ﻿using eShopSolution.ViewModels.Common;
 using eShopSolution.ViewModels.Systems.Users;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
@@ -16,10 +17,14 @@ namespace eShopSolution.AdminApp.Services
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IConfiguration _configuration;
-        public UserApiClient(IHttpClientFactory httpClientFactory, IConfiguration configuration)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public UserApiClient(IHttpClientFactory httpClientFactory, 
+                             IConfiguration configuration,
+                             IHttpContextAccessor httpContextAccessor)
         {
             _configuration = configuration;
             _httpClientFactory = httpClientFactory;
+            _httpContextAccessor = httpContextAccessor;
         }
         public async Task<string> Authenticate(LoginRequest request)
         {
@@ -29,6 +34,17 @@ namespace eShopSolution.AdminApp.Services
             var reponse = await client.PostAsync("/api/users/authenticate", httpContent);
             var token = await reponse.Content.ReadAsStringAsync();
             return token;
+        }
+
+        public async Task<UserViewModel> GetUserById(Guid id)
+        {
+            var session = _httpContextAccessor.HttpContext.Session.GetString("Token");
+            var client = GetHttpClient();
+            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", session);
+            var response = await client.GetAsync($"/api/users/{id}");
+            var body = await response.Content.ReadAsStringAsync();
+            var user = JsonConvert.DeserializeObject<UserViewModel>(body);
+            return user;
         }
 
         public async Task<PageResult<UserViewModel>> GetUserPagings(GetUserPagingRequest request)
@@ -50,6 +66,16 @@ namespace eShopSolution.AdminApp.Services
             var httpContent = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
 
             var response = await client.PostAsync("/api/users", httpContent);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> UpdateUser(Guid id, UserUpdateRequest request)
+        {
+            var client = GetHttpClient();
+            var jsonRequest = JsonConvert.SerializeObject(request);
+            var httpContent = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
+
+            var response = await client.PutAsync($"/api/users/{id}", httpContent);
             return response.IsSuccessStatusCode;
         }
 

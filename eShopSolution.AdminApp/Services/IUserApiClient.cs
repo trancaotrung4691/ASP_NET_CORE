@@ -12,5 +12,7 @@ namespace eShopSolution.AdminApp.Services
         Task<string> Authenticate(LoginRequest request);
         Task<PageResult<UserViewModel>> GetUserPagings(GetUserPagingRequest request);
         Task<bool> RegisterUser(RegisterRequest request);
+        Task<bool> UpdateUser(Guid id, UserUpdateRequest request);
+        Task<UserViewModel> GetUserById(Guid id);
     }
 }

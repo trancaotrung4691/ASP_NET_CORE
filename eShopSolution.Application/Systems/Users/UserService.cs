@@ -106,7 +106,8 @@ namespace eShopSolution.Application.Systems.Users
                     FirstName = x.FirstName,
                     LastName = x.LastName,
                     UserName = x.UserName,
-                    Id = x.Id
+                    Id = x.Id,
+                    Dob = x.Dob
                 }).ToListAsync();
 
             var pageResult = new PageResult<UserViewModel>()
@@ -116,6 +117,42 @@ namespace eShopSolution.Application.Systems.Users
             };
             return pageResult;
 
+        }
+
+        public async Task<bool> Update(Guid id, UserUpdateRequest request)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            user.Dob = request.Dob;
+            user.Email = request.Email;
+            user.FirstName = request.FirstName;
+            user.LastName = request.LastName;
+            user.PhoneNumber = request.PhoneNumber;
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<UserViewModel> GetById(Guid id)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null)
+            {
+                return null;
+            }
+            var result = new UserViewModel()
+            {
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                UserName = user.UserName,
+                Id = user.Id,
+                Dob = user.Dob
+            };
+            return result;
         }
     }
 }
