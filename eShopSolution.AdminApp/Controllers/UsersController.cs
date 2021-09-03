@@ -58,6 +58,37 @@ namespace eShopSolution.AdminApp.Controllers
             return View(request);
         }
         #endregion
+        #region Update
+        [HttpGet()]
+        public async Task<IActionResult> Edit(Guid id)
+        {
+            var user = await _userApiClient.GetUserById(id);
+            var userUpdateRequest = new UserUpdateRequest()
+            {
+                Id = user.Id,
+                Dob = user.Dob,
+                PhoneNumber = user.PhoneNumber,
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName
+            };
+            return View(userUpdateRequest);
+        }
+        [HttpPost()]
+        public async Task<IActionResult> Edit(UserUpdateRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(ModelState);
+            }
+            var result = await _userApiClient.UpdateUser(request.Id, request);
+            if (result)
+            {
+                return RedirectToAction("Index");
+            }
+            return View(request);
+        }
+        #endregion
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
