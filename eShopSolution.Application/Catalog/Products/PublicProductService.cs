@@ -48,7 +48,7 @@ namespace eShopSolution.Application.Catalog.Products
             var pageResult = new PageResult<ProductViewModel>()
             {
                 Items = data,
-                TotalRecord = totalRow
+                TotalRecords = totalRow
             };
             return pageResult;
         }
@@ -91,7 +91,7 @@ namespace eShopSolution.Application.Catalog.Products
             var pageResult = new PageResult<ProductViewModel>()
             {
                 Items = data,
-                TotalRecord = totalRow
+                TotalRecords = totalRow
             };
             return pageResult;
         }

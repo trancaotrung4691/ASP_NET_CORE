@@ -112,7 +112,9 @@ namespace eShopSolution.Application.Systems.Users
 
             var pageResult = new PageResult<UserViewModel>()
             {
-                TotalRecord = totalRecords,
+                TotalRecords = totalRecords,
+                PageIndex = request.PageIndex,
+                PageSize = request.PageSize,
                 Items = data
             };
             return pageResult;
