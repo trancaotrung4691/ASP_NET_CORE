@@ -156,5 +156,17 @@ namespace eShopSolution.Application.Systems.Users
             };
             return result;
         }
+
+        public async Task<bool> Delete(Guid id)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null) return false;
+            var result = await _userManager.DeleteAsync(user);
+            if (result.Succeeded)
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

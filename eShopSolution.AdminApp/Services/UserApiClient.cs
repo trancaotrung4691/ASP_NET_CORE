@@ -36,11 +36,17 @@ namespace eShopSolution.AdminApp.Services
             return token;
         }
 
+        public async Task<bool> DeleteUser(Guid id)
+        {
+            var client = GetHttpClient();
+            var response = await client.DeleteAsync($"/api/users/{id}");
+            return response.IsSuccessStatusCode;
+        }
+
         public async Task<UserViewModel> GetUserById(Guid id)
         {
-            var session = _httpContextAccessor.HttpContext.Session.GetString("Token");
             var client = GetHttpClient();
-            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", session);
+            //client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", session);
             var response = await client.GetAsync($"/api/users/{id}");
             var body = await response.Content.ReadAsStringAsync();
             var user = JsonConvert.DeserializeObject<UserViewModel>(body);
@@ -50,7 +56,7 @@ namespace eShopSolution.AdminApp.Services
         public async Task<PageResult<UserViewModel>> GetUserPagings(GetUserPagingRequest request)
         {
             var client = GetHttpClient();
-            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", request.BearerToken);
+            //client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", request.BearerToken);
             var response = await client.GetAsync($"/api/users/paging?pageIndex=" +
                                                 $"{request.PageIndex}&pageSize={request.PageSize}" +
                                                 $"&keyword={request.Keyword}");
@@ -81,8 +87,10 @@ namespace eShopSolution.AdminApp.Services
 
         private HttpClient GetHttpClient()
         {
+            var session = _httpContextAccessor.HttpContext.Session.GetString("Token");
             var client = _httpClientFactory.CreateClient();
             client.BaseAddress = new Uri(_configuration["BaseAddress"]);
+            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", session);
             return client;
         }
     }
