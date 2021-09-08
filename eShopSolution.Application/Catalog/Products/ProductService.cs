@@ -17,14 +17,14 @@ using System.Threading.Tasks;
 
 namespace eShopSolution.Application.Catalog.Products
 {
-    public class ManageProductService : IManageProductService
+    public class ProductService : IProductService
     {
         private readonly EShopDBContext _eShopDBContext;
         private readonly IStorageService _storageService;
         private const int VIEW_COUNT_INCREASE_VALUE = 1;
         private const int VIEW_COUNT_DEFAULT_VALUE = 0;
 
-        public ManageProductService(EShopDBContext eShopDbContext, IStorageService storageService)
+        public ProductService(EShopDBContext eShopDbContext, IStorageService storageService)
         {
             _eShopDBContext = eShopDbContext;
             _storageService = storageService;
@@ -348,6 +348,48 @@ namespace eShopSolution.Application.Catalog.Products
                 ProductId = productImage.ProductId,
                 FileSize = productImage.FileSize
             };
+        }
+        public async Task<PageResult<ProductViewModel>> GetAllByCategoryId(GetPublicProductPagingRequest getProductPagingRequest)
+        {
+            var query = from product in _eShopDBContext.Products
+                        join productTranslation in _eShopDBContext.ProductTranslations on product.Id equals productTranslation.Id
+                        join productInCategory in _eShopDBContext.ProductInCategorys on product.Id equals productInCategory.ProductId
+                        join category in _eShopDBContext.Categories on productInCategory.CategoryId equals category.Id
+                        where productTranslation.LanguageId == getProductPagingRequest.LanguageId
+                        select new { product, productTranslation, productInCategory };
+
+            if (getProductPagingRequest.CategoryId.HasValue && getProductPagingRequest.CategoryId.Value > 0)
+            {
+                query = query.Where(x => x.productInCategory.CategoryId == getProductPagingRequest.CategoryId.Value);
+            }
+
+            var totalRow = await query.CountAsync();
+
+            var data = await query.Skip((getProductPagingRequest.PageIndex - 1) * getProductPagingRequest.PageSize)
+                                  .Take(getProductPagingRequest.PageSize)
+                                  .Select(x => new ProductViewModel()
+                                  {
+                                      Id = x.product.Id,
+                                      DateCreated = x.product.DateCreated,
+                                      Description = x.productTranslation.Description,
+                                      Details = x.productTranslation.Details,
+                                      LanguageId = x.productTranslation.LanguageId,
+                                      Name = x.productTranslation.Name,
+                                      OriginalPrice = x.product.OriginalPrice,
+                                      Price = x.product.Price,
+                                      SeoAlias = x.productTranslation.SeoAlias,
+                                      SeoDescription = x.productTranslation.SeoDescription,
+                                      SeoTitle = x.productTranslation.SeoTitle,
+                                      Stock = x.product.Stock,
+                                      ViewCount = x.product.ViewCount
+                                  }).ToListAsync();
+
+            var pageResult = new PageResult<ProductViewModel>()
+            {
+                Items = data,
+                TotalRecords = totalRow
+            };
+            return pageResult;
         }
     }
 }
