@@ -13,9 +13,24 @@
     </ol>
     <div class="card mb-4">
         <div class="card-header">
-            <p>
-                <a class="btn btn-success" asp-action="Create">Tạo một người dùng mới</a>
-            </p>
+            <div class="row">
+                <div class="col-md-6 col-xs-12">
+                    <a class="btn btn-success" asp-action="Create">Tạo một người dùng mới</a>
+                </div>
+                <div class="col-md-6 col-xs-12">
+                    <form asp-action="Index" method="get">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <input type="text" name="keyword" class="form-control" value="@ViewBag.Keyword" />
+                            </div>
+                            <div class="col-md-4">
+                                <button class="btn btn-outline-primary" type="submit">Tìm</button>
+                                <button class="btn btn-dark" onclick="window.location.href='/Users/Index'" type="button">Reset</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
         <div class="card-body">
             <table class="table table-bordered">
@@ -65,8 +80,8 @@
                                 @Html.DisplayFor(modelItem => item.Email)
                             </td>
                             <td>
-                                @Html.ActionLink("Edit", "Edit", new { id=item.Id}) |
-                                @Html.ActionLink("Details", "Details", new { id=item.Id}) |
+                                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
                                 @Html.ActionLink("Delete", "Delete", new { id = item.Id })
                             </td>
                         </tr>
