@@ -5,11 +5,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Logging;
-using Microsoft.IdentityModel.Tokens;
 using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -24,8 +20,9 @@ namespace eShopSolution.AdminApp.Controllers
             _userApiClient = userApiClient;
             _configuration = configuration;
         }
-        public async Task<IActionResult> Index(string keyword, int pageIndex = 1, int pageSize = 1)
+        public async Task<IActionResult> Index(string keyword, int pageIndex = 1, int pageSize = 5)
         {
+            ViewBag.Keyword = keyword;
             var sessions = HttpContext.Session.GetString("Token");
             var request = new GetUserPagingRequest()
             {
